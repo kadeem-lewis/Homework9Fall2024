@@ -1,8 +1,9 @@
+import logging
+from typing import List
 # Import necessary modules and functions from FastAPI and other standard libraries
 from fastapi import APIRouter, HTTPException, Depends, Response, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
-from typing import List
 
 # Import classes and functions from our application's modules
 from app.schema import QRCodeRequest, QRCodeResponse
@@ -10,7 +11,6 @@ from app.services.qr_service import generate_qr_code, list_qr_codes, delete_qr_c
 from app.utils.common import decode_filename_to_url, encode_url_to_filename, generate_links
 from app.config import QR_DIRECTORY, SERVER_BASE_URL, FILL_COLOR, BACK_COLOR, SERVER_DOWNLOAD_FOLDER
 
-import logging
 
 # Create an APIRouter instance to register our endpoints
 router = APIRouter()
@@ -21,10 +21,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 # Define an endpoint to create QR codes
 # It responds to POST requests at "/qr-codes/" and returns data matching the QRCodeResponse model
 # This endpoint is tagged as "QR Codes" in the API docs and returns HTTP 201 when a QR code is created successfully
-@router.post("/qr-coes/", response_model=QRCodeResponse, status_code=status.HTTP_200_OK, tags=["QR Codes"])
+@router.post("/qr-codes/", response_model=QRCodeResponse, status_code=status.HTTP_200_OK, tags=["QR Codes"])
 async def create_qr_code(request: QRCodeRequest, token: str = Depends(oauth2_scheme)):
     # Log the creation request
-    logging.info(f"Creating QR code for URL: {request.url}")
+    logging.info("Creating QR code for URL: %s", request.url)
     
     # Encode the URL to a safe filename format
     encoded_url = encode_url_to_filename(request.url)
@@ -68,10 +68,10 @@ async def list_qr_codes_endpoint(token: str = Depends(oauth2_scheme)):
 
 @router.delete("/qr-codes/{qr_fileame}", status_code=status.HTTP_200_OK, tags=["QR Codes"])
 async def delete_qr_code_endpoint(qr_filename: str, token: str = Depends(oauth2_scheme)):
-    logging.info(f"Deleting QR code: {qr_filename}.")
+    logging.info("Deleting QR code: %s.", qr_filename)
     qr_code_path = QR_DIRECTORY / qr_filename
     if not qr_code_path.is_file():
-        logging.warning(f"QR code not found: {qr_filename}.")
+        logging.warning("QR code not found: %s.", qr_filename)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="QR code not found")
 
     delete_qr_code(qr_code_path)
