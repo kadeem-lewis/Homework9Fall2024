@@ -64,7 +64,7 @@ jobs:
           cache-to: type=inline,mode=max
           
       - name: Scan the Docker image
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: 'ksl29/qrcode_demo:${{ github.sha }}'
           format: 'table'
