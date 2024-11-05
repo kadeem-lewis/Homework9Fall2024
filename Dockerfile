@@ -1,5 +1,5 @@
 # Use an official lightweight Python image.
-FROM python:3.10-slim-bullseye as base
+FROM python:3.12-slim-bullseye as base
 
 # Set environment variables:
 # PYTHONUNBUFFERED: Prevents Python from buffering stdout and stderr
